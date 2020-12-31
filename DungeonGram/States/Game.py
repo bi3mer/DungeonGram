@@ -1,14 +1,16 @@
 from .State import State
+from ..config import *
 
 from itertools import repeat
 from json import load
 from os.path import join
+from time import sleep
 
 class Game(State):
     __slots__ = [
         'ready_to_transition', 'items', 'tiers', 'entities', 'max_y', 'max_x',
         'entities', 'tiles', 'positions', 'healths', 'behaviors', 'map',
-        'player_index']
+        'player_id', 'DIRECTIONS']
 
     def __init__(self):
         self.ready_to_transition = False
@@ -33,11 +35,11 @@ class Game(State):
         for item_type in self.items:
             self.items[item_type].sort(key=lambda info: info['tier'])
 
-        self.player_index = 0
+        self.player_id = 0
         self.entities = []
         self.tiles = []     # 0 
         self.positions = [] # 1
-        self.healths = []   # 2
+        self.stats = []     # 2
         self.behaviors = [] # 3
         self.types = []     # 4
 
@@ -52,7 +54,7 @@ class Game(State):
 
         for y, line in enumerate(f.readlines()):
             line = line.strip()
-            self.map.append(line)
+            self.map.append(list(line))
 
             for x, char in enumerate(line):
                 if char == '-':
@@ -62,20 +64,27 @@ class Game(State):
                     raise TypeError(f'{char} in map not in entities')
 
                 entity_info = entities[char]
+                entity_id = len(self.entities)
+
+                if char == '@':
+                    self.player_id = entity_id
 
                 position_index = len(self.positions)
-                self.positions.append([x,y])
+                self.positions.append([entity_id, x, y])
 
                 tile_index = len(self.tiles)
-                self.tiles.append(char)
+                self.tiles.append((entity_id, char))
 
                 type_index = len(self.types)
-                self.types.append(entities[char]['type'])
+                self.types.append((entity_id, entities[char]['type']))
 
-                if 'health' in entity_info:
-                    health_index = len(self.healths)
+                if 'stats' in entity_info:
+                    stats_index = len(self.stats)
+                    stats_info = entity_info['stats']
+                    print(stats_info)
+                    self.stats.append([entity_id, stats_info['health'], stats_info['damage']])
                 else:
-                    health_index = -1
+                    stats_index = -1
 
                 if 'behavior' in entity_info:
                     # TODO
@@ -83,34 +92,79 @@ class Game(State):
                 else:
                     behavior_index = -1
 
-                self.entities.append((tile_index, position_index, health_index, behavior_index))
+                self.entities.append((tile_index, position_index, stats_index, behavior_index, type_index))
             
         f.close()
 
-        self.max_y = len(self.map)
-        self.max_x = len(self.map[0])
+        self.max_y = len(self.map) - 1
+        self.max_x = len(self.map[0]) - 1
 
     def get_player_actions(self):
-        x, y = self.positions[self.player_index]
+        valid_actions = []
 
-        # check up, down, left, and right. While doing so check for entities in 
-        # the cardinal directions. If another entity is spotted in the map, then
-        # there should be possible interactions like attack or use. 
-        #
-        # Lastly, once there is an inventory, the player should have the option 
+        _, x, y = self.positions[self.player_id]
+        for modifier in DIRECTIONS:
+            new_x = x + modifier[0]
+            if new_x <= 0 or new_x >= self.max_x:
+                continue
+
+            new_y = y + modifier[1]
+            if new_y <= 0 or new_y >= self.max_y:
+                continue
+
+            if self.map[new_y][new_x] == '-':
+                valid_actions.append((MOVE_ACTION, self.player_id, new_x, new_y))
+
+        # Once there is an inventory, the player should have the option 
         # to use the items in their inventory. They should only be able to hold 
         # onto one weapon and one pickaxe
 
-    def update(self):
-        valid_player_input = False
-        while not valid_player_input:
-            key_press = input('')
+        return valid_actions
 
-        self.ready_to_transition = True
+    def run_action(self, action):
+        entity_id = action[1]
+        entity = self.entities[entity_id]
+        if action[0] == MOVE_ACTION:
+            _, old_x, old_y = self.positions[entity[1]]
+            self.positions[entity[1]][1] = action[2]
+            self.positions[entity[1]][2] = action[3]
+
+            self.map[old_y][old_x] = '-'
+            self.map[action[3]][action[2]] = self.tiles[entity[0]][1]
+        else:
+            raise TypeError(f'unhandled action type: {action[0]}')
+
+    def update(self):
+        possible_actions = self.get_player_actions()
+
+        print()
+        for i, action in enumerate(possible_actions):
+            if action[0] == MOVE_ACTION:
+                action[0]
+                print(f'{i}) move')
+        try:
+            key_press = input('\nEnter command: ')
+            index = int(key_press)
+            if index < 0 or index >= len(possible_actions):
+                print('Please enter a numberr associated with the commands above.')
+                sleep(0.3)
+                return
+            else:
+                self.run_action(possible_actions[index])
+        except ValueError:
+            print('\nPlease only enter the index associated with the command.')
+            sleep(0.3)
+            return
+
+        # if the input is valid, then we can let the entities do their thing, else
+        # we can't.
+
+        if self.stats[self.entities[self.player_id][STAT_INDEX]][2] <= 0:
+            self.should_transition = True
 
     def draw(self):
         for row in self.map:
-            print(row.strip())
+            print(''.join(row))
         
     def should_transition(self):
         return self.ready_to_transition

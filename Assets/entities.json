@@ -2,50 +2,77 @@
     "X": {
         "name": "Block",
         "type": "environment",
-        "health": 50
+        "stats": {
+            "health": 50,
+            "damage": 0
+        }
     }, 
     "@": {
         "name": "Player",
         "type": "being",
-        "health": 10
+        "stats": {
+            "health": 50,
+            "damage": 1
+        }
     },
     "s": {
         "name": "A Foolish Skeleton",
         "type": "being",
-        "health": 4,
+        "stats": {
+            "health": 50,
+            "damage": 2
+        },
         "behavior": "enemy"
     },
     "E": {
         "name": "Eliza the Ghost",
         "type": "being",
-        "health": 10,
+        "stats": {
+            "health": 50,
+            "damage": 3
+        },
         "behavior": "enemy"
     },
     "U": {
         "name": "Ubertron the Beast",
         "type": "being",
-        "health": 50,
+        "stats": {
+            "health": 50,
+            "damage": 10
+        },
         "behavior": "guardian"
     },
     "T": {
         "name": "Treasure",
-        "health": 15,
+        "stats": {
+            "health": 15,
+            "damage": 0
+        },
         "behavior": "treasure",
         "type": "environment"
     },
     "D": {
         "name": "Door",
-        "health": 10,
+        "stats": {
+            "health": 15,
+            "damage": 0
+        },
         "type": "environment"
     }, 
     "L": {
         "name": "Locked Door",
-        "health": 50,
+        "stats": {
+            "health": 50,
+            "damage": 0
+        },
         "type": "environment"
     }, 
     "K": {
         "name": "key",
-        "health": 1,
+        "stats": {
+            "health": 50,
+            "damage": 0
+        },
         "type": "tool",
         "behavior": "unlock"
     },
