@@ -113,7 +113,7 @@ class Game(State):
                 continue
 
             if self.map[new_y][new_x] == '-':
-                valid_actions.append((MOVE_ACTION, self.player_id, new_x, new_y))
+                valid_actions.append((MOVE_ACTION, self.player_id, modifier[0], modifier[1]))
 
         # Once there is an inventory, the player should have the option 
         # to use the items in their inventory. They should only be able to hold 
@@ -126,11 +126,15 @@ class Game(State):
         entity = self.entities[entity_id]
         if action[0] == MOVE_ACTION:
             _, old_x, old_y = self.positions[entity[1]]
-            self.positions[entity[1]][1] = action[2]
-            self.positions[entity[1]][2] = action[3]
+
+            new_x =  old_x + action[2]
+            new_y = old_y + action[3]
+
+            self.positions[entity[1]][1] = new_x
+            self.positions[entity[1]][2] = new_y
 
             self.map[old_y][old_x] = '-'
-            self.map[action[3]][action[2]] = self.tiles[entity[0]][1]
+            self.map[new_y][new_x] = self.tiles[entity[0]][1]
         else:
             raise TypeError(f'unhandled action type: {action[0]}')
 
@@ -140,20 +144,28 @@ class Game(State):
         print()
         for i, action in enumerate(possible_actions):
             if action[0] == MOVE_ACTION:
-                action[0]
-                print(f'{i}) move')
+                if action[2] == 1:
+                    print(f'{i}) move right.')
+                elif action[2] == -1:
+                    print(f'{i}) move left.')
+                elif action[3] == 1:
+                    print(f'{i}) move down')
+                elif action[3] == -1:
+                    print(f'{i}) move up')
+                else:
+                    raise ValueError(f'Move action must be in DIRECTIONS: {action}')
         try:
             key_press = input('\nEnter command: ')
             index = int(key_press)
             if index < 0 or index >= len(possible_actions):
-                print('Please enter a numberr associated with the commands above.')
-                sleep(0.3)
+                print('Please enter a number associated with the commands above.')
+                sleep(ERROR_SLEEP_TIME)
                 return
             else:
                 self.run_action(possible_actions[index])
         except ValueError:
             print('\nPlease only enter the index associated with the command.')
-            sleep(0.3)
+            sleep(ERROR_SLEEP_TIME)
             return
 
         # if the input is valid, then we can let the entities do their thing, else
