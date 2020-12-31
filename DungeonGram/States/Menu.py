@@ -11,6 +11,19 @@ class Menu(State):
         pass
 
     def draw(self):
+        print('Welcome to DungoenGram!')
+        print()
+        print()
+        print()
+        print('You are the @ character the screen. Avoid or attack the enemies!')
+        print('A to move left')
+        print('S to move down')
+        print('D to move right')
+        print('W to move up')
+        print('E to interact with object.')
+        print()
+        print()
+        print()
         print('Press enter to start. Q and enter to quit.')
         key_press = input()
 

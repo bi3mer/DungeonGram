@@ -7,3 +7,6 @@ class State:
 
     def should_transition(self):
         raise NotImplementedError()
+
+    def reset(self):
+        raise NotImplementedError()

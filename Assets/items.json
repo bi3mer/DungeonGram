@@ -1,0 +1,152 @@
+{
+    "Weak Health Potion": {
+        "effect_type": "heal",
+        "item_type": "potion",
+        "tier": 0,
+        "player": {
+            "value": 1
+        }
+    }, 
+    "Medium Health Potion": {
+        "effect_type": "heal",
+        "item_type": "potion",
+        "tier": 1,
+        "player": {
+            "value": 3
+        }
+    }, 
+    "Strong Health Potion": {
+        "effect_type": "heal",
+        "item_type": "potion",
+        "tier": 2,
+        "player": {
+            "value": 8
+        }
+    }, 
+    "Rotten Plywood": {
+        "effect_type": "damage",
+        "item_type": "weapon",
+        "tier": 0,
+        "player": {
+            "value": 3, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 0, 
+            "durabilityCost": 1
+        },
+        "durability": 1
+    },
+    "Crumbling Tin Sword": {
+        "effect_type": "damage",
+        "item_type": "weapon",
+        "tier": 1,
+        "player": {
+            "value": 2, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 0, 
+            "durabilityCost": 2
+        },
+        "durability": 3
+    },
+    "Dodgy Bronze Sword": {
+        "effect_type": "damage",
+        "item_type": "weapon",
+        "tier": 2,
+        "player": {
+            "value": 3, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 1, 
+            "durabilityCost": 6
+        },
+        "durability": 8
+    },
+    "A Swift Iron Sword": {
+        "effect_type": "damage",
+        "item_type": "weapon",
+        "tier": 3,
+        "player": {
+            "value": 5, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 2, 
+            "durabilityCost": 4
+        },
+        "durability": 15
+    },
+    "Sword of the Great Balenfine": {
+        "effect_type": "damage",
+        "item_type": "weapon",
+        "tier": 4,
+        "player": {
+            "value": 50, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 25, 
+            "durabilityCost": 2
+        },
+        "durability": 50
+    },
+    "A Pickaxe that Does Not Inspire": {
+        "effect_type": "damage",
+        "item_type": "pickaxe",
+        "tier": 0,
+        "player": {
+            "value": 2, 
+            "durabilityCost": 2
+        },
+        "environment": {
+            "value": 25, 
+            "durabilityCost": 2
+        },
+        "durability": 5
+    },
+    "Pickaxe of the Amateur ": {
+        "effect_type": "damage",
+        "item_type": "pickaxe",
+        "tier": 1,
+        "player": {
+            "value": 2, 
+            "durabilityCost": 13
+        },
+        "environment": {
+            "value": 10, 
+            "durabilityCost": 5
+        },
+        "durability": 20
+    },
+    "Pickaxe of the Professional": {
+        "effect_type": "damage",
+        "item_type": "pickaxe",
+        "tier": 2,
+        "player": {
+            "value": 2, 
+            "durabilityCost": 13
+        },
+        "environment": {
+            "value": 15, 
+            "durabilityCost": 4
+        },
+        "durability": 32
+    },
+    "Pickaxe of the Great Digger Rain": {
+        "effect_type": "damage",
+        "item_type": "pickaxe",
+        "tier": 3,
+        "player": {
+            "value": 2, 
+            "durabilityCost": 1
+        },
+        "environment": {
+            "value": 50, 
+            "durabilityCost": 0
+        },
+        "durability": 1
+    }
+}
