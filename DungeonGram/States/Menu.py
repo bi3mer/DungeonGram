@@ -7,6 +7,12 @@ class Menu(State):
     def __init__(self):
         self.ready_to_transition = False
 
+    def on_enter(self):
+        pass
+
+    def on_exit(self):
+        pass
+
     def update(self):
         pass
 
@@ -16,6 +22,12 @@ class Menu(State):
         print()
         print()
         print('You are the @ character the screen. Avoid or attack the enemies!')
+        print()
+        print()
+        print('Enter A to move left.')
+        print('Enter S to move down.')
+        print('Enter D to move right.')
+        print('Enter W to move up.')
         print()
         print()
         print('Press enter to start. Q and enter to quit.')

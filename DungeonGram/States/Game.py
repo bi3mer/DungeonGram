@@ -1,125 +1,78 @@
+from os.path import join
 from .State import State
 from ..config import *
 
-from itertools import repeat
-from json import load
-from os.path import join
-from time import sleep
+from ..ComponentManager import *
+from ..EntityDB import *
+from ..Systems import *
 
 class Game(State):
     __slots__ = [
-        'ready_to_transition', 'items', 'tiers', 'entities', 'max_y', 'max_x',
-        'entities', 'tiles', 'positions', 'healths', 'behaviors', 'map',
-        'player_id', 'DIRECTIONS']
+        'ready_to_transition', 'entities', 'entities', 'player_id', 'systems',
+        'player_system']
 
     def __init__(self):
+        # set up order of operatios for systems
+        self.player_system = Player()
+        self.systems = [
+            BasicEnemy(),
+            Guardian()
+        ]
+
+    def on_enter(self):
         self.ready_to_transition = False
-
-        # build items
-        f = open(join('Assets', 'items.json'))
-        item_data = load(f)
-        f.close()
-
-        self.items = {}
-        self.tiers = {}
-        for item_name in item_data:
-            item_info = item_data[item_name]
-            item_type = item_info['item_type']
-
-            if item_type not in self.tiers:
-                self.tiers[item_type] = 0
-                self.items[item_type] = []
-
-            self.items[item_type].append(item_info)
-
-        for item_type in self.items:
-            self.items[item_type].sort(key=lambda info: info['tier'])
 
         self.player_id = 0
         self.entities = []
-        self.tiles = []     # 0 
-        self.positions = [] # 1
-        self.stats = []     # 2
-        self.behaviors = [] # 3
-        self.types = []     # 4
-
-        # get entity types
-        f = open(join('Assets', 'entities.json'))
-        entities = load(f)
-        f.close()
         
         # temporary map building. To be replaced with procedural generation
         f = open(join('Assets', 'Levels', '0.txt'))
-        self.map = []
+        cm_map = []
 
         for y, line in enumerate(f.readlines()):
             line = line.strip()
-            self.map.append(list(line))
+            cm_map.append(list(line))
 
             for x, char in enumerate(line):
                 if char == '-':
                     continue
 
-                if char not in entities:
+                if char not in edb_entities:
                     raise TypeError(f'{char} in map not in entities')
 
-                entity_info = entities[char]
+                entity_info = edb_entities[char]
                 entity_id = len(self.entities)
 
                 if char == '@':
                     self.player_id = entity_id
 
-                position_index = len(self.positions)
-                self.positions.append([entity_id, x, y])
-
-                tile_index = len(self.tiles)
-                self.tiles.append((entity_id, char))
-
-                type_index = len(self.types)
-                self.types.append((entity_id, entities[char]['type']))
+                pos_id = cm_add_position(x, y)
+                tile_id = cm_add_tile(char)
+                type_id = cm_add_type(entity_info['type'])
 
                 if 'stats' in entity_info:
-                    stats_index = len(self.stats)
                     stats_info = entity_info['stats']
-                    print(stats_info)
-                    self.stats.append([entity_id, stats_info['health'], stats_info['damage']])
+                    stats_id = cm_add_stats(stats_info['health'], stats_info['damage'])
                 else:
-                    stats_index = -1
+                    stats_id = -1
 
-                if 'behavior' in entity_info:
-                    # TODO
-                    behavior_index = -1
+                if 'system' in entity_info:
+                    system_id = cm_add_stats(entity_info['system'])
                 else:
-                    behavior_index = -1
+                    system_id = -1
 
-                self.entities.append((tile_index, position_index, stats_index, behavior_index, type_index))
+                self.entities.append((system_id, tile_id, pos_id, stats_id, type_id))
             
         f.close()
 
         self.max_y = len(self.map) - 1
         self.max_x = len(self.map[0]) - 1
 
-    def get_player_actions(self):
-        valid_actions = []
-
-        _, x, y = self.positions[self.player_id]
-        for modifier in DIRECTIONS:
-            new_x = x + modifier[0]
-            if new_x <= 0 or new_x >= self.max_x:
-                continue
-
-            new_y = y + modifier[1]
-            if new_y <= 0 or new_y >= self.max_y:
-                continue
-
-            if self.map[new_y][new_x] == '-':
-                valid_actions.append((MOVE_ACTION, self.player_id, modifier[0], modifier[1]))
-
-        # Once there is an inventory, the player should have the option 
-        # to use the items in their inventory. They should only be able to hold 
-        # onto one weapon and one pickaxe
-
-        return valid_actions
+    def on_exit(self):
+        self.max_x = 0
+        self.max_y
+        del self.entities
+        cm_reset()
 
     def run_action(self, action):
         entity_id = action[1]
@@ -138,38 +91,22 @@ class Game(State):
         else:
             raise TypeError(f'unhandled action type: {action[0]}')
 
+
     def update(self):
-        possible_actions = self.get_player_actions()
-
-        print()
-        for i, action in enumerate(possible_actions):
-            if action[0] == MOVE_ACTION:
-                if action[2] == 1:
-                    print(f'{i}) move right.')
-                elif action[2] == -1:
-                    print(f'{i}) move left.')
-                elif action[3] == 1:
-                    print(f'{i}) move down')
-                elif action[3] == -1:
-                    print(f'{i}) move up')
-                else:
-                    raise ValueError(f'Move action must be in DIRECTIONS: {action}')
-        try:
-            key_press = input('\nEnter command: ')
-            index = int(key_press)
-            if index < 0 or index >= len(possible_actions):
-                print('Please enter a number associated with the commands above.')
-                sleep(ERROR_SLEEP_TIME)
-                return
-            else:
-                self.run_action(possible_actions[index])
-        except ValueError:
-            print('\nPlease only enter the index associated with the command.')
-            sleep(ERROR_SLEEP_TIME)
+        a = self.player_system.get_action(self.entities[self.player_id])
+        if a == None:
             return
+        self.run_action(a)
 
-        # if the input is valid, then we can let the entities do their thing, else
-        # we can't.
+        for system in self.systems:
+            actions = []
+            for entity in self.entities:
+                a = system.get_action(entity)
+                if a != None:
+                    actions.append(a)
+
+            for a in actions:
+                self.run_action(a)
 
         if self.stats[self.entities[self.player_id][STAT_INDEX]][2] <= 0:
             self.should_transition = True

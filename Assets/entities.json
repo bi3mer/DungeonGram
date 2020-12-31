@@ -13,7 +13,8 @@
         "stats": {
             "health": 50,
             "damage": 1
-        }
+        }, 
+        "system": "player"
     },
     "s": {
         "name": "A Foolish Skeleton",
@@ -22,7 +23,7 @@
             "health": 50,
             "damage": 2
         },
-        "behavior": "enemy"
+        "system": "enemy"
     },
     "E": {
         "name": "Eliza the Ghost",
@@ -31,7 +32,7 @@
             "health": 50,
             "damage": 3
         },
-        "behavior": "enemy"
+        "system": "enemy"
     },
     "U": {
         "name": "Ubertron the Beast",
@@ -40,7 +41,7 @@
             "health": 50,
             "damage": 10
         },
-        "behavior": "guardian"
+        "system": "guardian"
     },
     "T": {
         "name": "Treasure",
@@ -48,7 +49,7 @@
             "health": 15,
             "damage": 0
         },
-        "behavior": "treasure",
+        "system": "treasure",
         "type": "environment"
     },
     "D": {
@@ -74,7 +75,7 @@
             "damage": 0
         },
         "type": "tool",
-        "behavior": "unlock"
+        "system": "unlock"
     },
     "S": {
         "name": "Unbreakable Wall",

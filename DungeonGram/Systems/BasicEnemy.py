@@ -1,0 +1,2 @@
+class BasicEnemy:
+    pass
