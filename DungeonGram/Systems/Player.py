@@ -1,27 +1,25 @@
 from .System import System
 from ..config import *
 
-from ..ComponentManager import *
-
 class Player(System):
     def __init__(self):
         super().__init__()
 
-    def get_player_actions(self, entity_id, pos_id):
+    def __can_move(self, state, player_id, direction):
+        x, y = state.positions[state.entities[player_id][POSITION_INDEX]]
+        new_x = x + direction[0]
+        if new_x <= 0 or new_x >= state.max_x:
+            return False
+
+        new_y = y + direction[1]
+        if new_y <= 0 or new_y >= state.max_y:
+            return False
+
+        return state.map[new_y][new_x] == '-'
+
+    def get_player_actions(self, state, player_id):
         valid_actions = []
-
-        x, y = cm_positions[pos_id]
-        for modifier in DIRECTIONS:
-            new_x = x + modifier[0]
-            if new_x <= 0 or new_x >= self.max_x:
-                continue
-
-            new_y = y + modifier[1]
-            if new_y <= 0 or new_y >= self.max_y:
-                continue
-
-            if self.map[new_y][new_x] == '-':
-                valid_actions.append((MOVE_ACTION, entity_id, modifier[0], modifier[1]))
+        x, y = state.positions[state.entities[player_id][POSITION_INDEX]]
 
         # Once there is an inventory, the player should have the option 
         # to use the items in their inventory. They should only be able to hold 
@@ -29,12 +27,8 @@ class Player(System):
 
         return valid_actions
 
-    def get_action(self, entity, entity_id):
-        _, _, pos_id, _, type_id = entity
-        if type_id != 'player':
-            return None
-            
-        possible_actions = self.get_player_actions(entity_id, pos_id)
+    def get_action(self, state, player_id):
+        possible_actions = self.get_player_actions(state, player_id)
 
         print()
         for i, action in enumerate(possible_actions):
@@ -42,10 +36,24 @@ class Player(System):
         
         try:
             key_press = input('\nEnter command: ')
-            index = int(key_press)
-            if index < 0 or index >= len(possible_actions):
-                return
+
+            if key_press == 'a':
+                if self.__can_move(state, player_id, (-1, 0)):
+                    return (MOVE_ACTION, player_id, -1, 0)
+            elif key_press == 's':
+                if self.__can_move(state, player_id, (0, 1)):
+                    return (MOVE_ACTION, player_id, 0, 1)
+            elif key_press == 'd':
+                if self.__can_move(state, player_id, (1, 0)):
+                    return (MOVE_ACTION, player_id, 1, 0)
+            elif key_press == 'w':
+                if self.__can_move(state, player_id, (0, -1)):
+                    return (MOVE_ACTION, player_id, 0, -1)
             else:
-                self.run_action(possible_actions[index])
+                index = int(key_press)
+                if index < 0 or index >= len(possible_actions):
+                    return
+                else:
+                    self.run_action(possible_actions[index])
         except ValueError:
             return

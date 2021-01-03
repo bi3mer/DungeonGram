@@ -1,3 +1,3 @@
 class System:
-    def get_action(self, entity_id, entity):
+    def get_action(self, state, player_id):
         raise NotImplementedError()
