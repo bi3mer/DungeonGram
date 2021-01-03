@@ -27,7 +27,7 @@ class Player(System):
 
         return valid_actions
 
-    def get_action(self, state, player_id):
+    def get_actions(self, state, player_id):
         possible_actions = self.get_player_actions(state, player_id)
 
         print()
@@ -40,15 +40,23 @@ class Player(System):
             if key_press == 'a':
                 if self.__can_move(state, player_id, (-1, 0)):
                     return (MOVE_ACTION, player_id, -1, 0)
+                else:
+                    return (MESSAGE_ACTION, 'Move command not possible')
             elif key_press == 's':
                 if self.__can_move(state, player_id, (0, 1)):
                     return (MOVE_ACTION, player_id, 0, 1)
+                else:
+                    return (MESSAGE_ACTION, 'Move command not possible')
             elif key_press == 'd':
                 if self.__can_move(state, player_id, (1, 0)):
                     return (MOVE_ACTION, player_id, 1, 0)
+                else:
+                    return (MESSAGE_ACTION, 'Move command not possible')
             elif key_press == 'w':
                 if self.__can_move(state, player_id, (0, -1)):
                     return (MOVE_ACTION, player_id, 0, -1)
+                else:
+                    return (MESSAGE_ACTION, 'Move command not possible')
             else:
                 index = int(key_press)
                 if index < 0 or index >= len(possible_actions):

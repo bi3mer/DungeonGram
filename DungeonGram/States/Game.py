@@ -15,13 +15,15 @@ class Game(State):
         ]
 
         self.state = GameState()
+        self.messages = []
 
     def on_enter(self):
         self.ready_to_transition = False
 
         self.player_id = 0
         
-        # temporary map building. To be replaced with procedural generation
+        # temporary map building from level file. This will be replaced with 
+        # procedural generation
         f = open(join('Assets', 'Levels', '0.txt'))
         self.state.map = []
 
@@ -63,18 +65,18 @@ class Game(State):
             
         f.close()
 
-        self.state.max_y = len(self.state.map) - 1
-        self.state.max_x = len(self.state.map[0]) - 1
+        self.state.max_y = len(self.state.map)
+        self.state.max_x = len(self.state.map[0])
 
     def on_exit(self):
         self.state.reset()
 
     def run_action(self, action):
-        entity_id = action[1]
-        entity = self.state.entities[entity_id]
         if action[0] == MOVE_ACTION:
-            old_x, old_y = self.state.positions[entity[1]]
-
+            entity_id = action[1]
+            entity = self.state.entities[entity_id]
+            
+            old_x, old_y = self.state.positions[entity[POSITION_INDEX]]
             new_x = old_x + action[2]
             new_y = old_y + action[3]
 
@@ -83,32 +85,38 @@ class Game(State):
 
             self.state.map[old_y][old_x] = '-'
             self.state.map[new_y][new_x] = self.state.tiles[entity[TILE_INDEX]]
+        elif action[0] == MESSAGE_ACTION:
+            self.messages.append(action[1])
         else:
             raise TypeError(f'unhandled action type: {action[0]}')
 
     def update(self):
-        a = self.player_system.get_action(self.state, self.player_id)
+        a = self.player_system.get_actions(self.state, self.player_id)
         if a == None:
             return
         self.run_action(a)
 
         for system in self.systems:
-            actions = system.get_actions(self.state)
+            actions = system.get_actions(self.state, self.player_id)
             for a in actions:
-                self.run_action(a)
+                if a != None:
+                    self.run_action(a)
 
-        if self.stats[self.state.entities[self.player_id][STAT_INDEX]][2] <= 0:
+        if self.state.stats[self.state.entities[self.player_id][STAT_INDEX]][0] <= 0:
             self.should_transition = True
 
     def draw(self):
+        for message in self.messages:
+            print(message)
+
+        self.messages.clear()
+        print()
+
         for row in self.state.map:
             print(''.join(row))
-        
+
     def should_transition(self):
         return self.ready_to_transition
 
     def reset(self):
-        for key in self.tiers:
-            self.tiers[key] = 0
-
         self.state.clear()

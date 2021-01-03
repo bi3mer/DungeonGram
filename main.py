@@ -1,4 +1,10 @@
 from DungeonGram.States import *
+import atexit
+
+# @atexit.register
+# def on_exit():
+#     print(chr(27) + "[2J") # clear the terminal
+#     print('Thanks for playing!')
 
 def main():
     menu_state = Menu()
