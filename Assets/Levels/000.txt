@@ -9,5 +9,5 @@ S-----T-----X---------X-----X--X--X----XT--s----s------XXXXXXXXXXXXXXXXXXXXXXX--
 S-----T-----X--T--s---X-----X--X--X----XT----s---------XXXXXXXXXXXXXXXXXXXXXXX----X--X--X--X--------XXXXXXXXXXXXXXXXXS
 S-----T-----X--T--s---X-----X--X--X----XXXXXXXXXXXX----XXXXXXXXXXXXXXXXXXXXXXX----X--X--X--X----s---XXXXXXXXXXXXXXXXXS
 S-----T-----X---------L-----X--X-sX----X-TXXXXXXXXX----XXXXXXXXXXXXXXX------------X--X-sX--X----XXXXXXXs---XX-------TS
-S--@--T-----XXXXXXXXXXX--------X-------X-TXXXXXXXXX-X-----s-----s----s----TT---------X-----X-------------X----sX----TS
+S-@---T-----XXXXXXXXXXX--------X-------X-TXXXXXXXXX-X-----s-----s----s----TT---------X-----X-------------X----sX----TS
 SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS

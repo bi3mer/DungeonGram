@@ -1,10 +1,12 @@
 from os.path import join
-from .State import State
-from ..config import *
+from random import sample
 
 from .GameState import GameState
+from .State import State
 from ..EntityDB import *
 from ..Systems import *
+from ..config import *
+from ..ItemDB import *
 
 class Game(State):
     def __init__(self):
@@ -24,7 +26,7 @@ class Game(State):
         
         # temporary map building from level file. This will be replaced with 
         # procedural generation
-        f = open(join('Assets', 'Levels', '0.txt'))
+        f = open(join('Assets', 'Levels', '000.txt'))
         self.state.map = []
 
         for y, line in enumerate(f.readlines()):
@@ -59,7 +61,7 @@ class Game(State):
                 else:
                     system_id = -1
 
-                entity_id = self.state.add_entity((system_id, tile_id, pos_id, stats_id, type_id, is_active_id))
+                entity_id = self.state.add_entity([system_id, tile_id, pos_id, stats_id, type_id, is_active_id])
                 if char == '@':
                     self.player_id = entity_id
             
@@ -72,7 +74,8 @@ class Game(State):
         self.state.reset()
 
     def run_action(self, action):
-        if action[0] == MOVE_ACTION:
+        action_type = action[0]
+        if action_type == MOVE_ACTION:
             entity_id = action[1]
             entity = self.state.entities[entity_id]
             
@@ -85,8 +88,33 @@ class Game(State):
 
             self.state.map[old_y][old_x] = '-'
             self.state.map[new_y][new_x] = self.state.tiles[entity[TILE_INDEX]]
-        elif action[0] == MESSAGE_ACTION:
+        elif action_type == MESSAGE_ACTION:
             self.messages.append(action[1])
+        elif action_type == USE_ACTION:
+            target_entity = self.state.entities[action[2]]
+            target_char = self.state.tiles[target_entity[TILE_INDEX]]
+
+            if target_char == 'T':
+                item_name = idb_get_random_item_name()
+                # self.messages.append(f'Picked up {item_name}.')
+                self.messages.append(f'Picked up {item_name} but not added to inventory.')
+            elif target_char == 'D':
+                self.messages.append('You open the door...')
+            elif target_char == 'L':
+                self.messages.append('Locked doors not implemented')
+            elif target_char == 'K':
+                self.messages.append('Picked up a key. use it to open locked doors (L). Not added to inventory yet.')
+            else:
+                raise TypeError(f'Unhandled use type: {target_char}')
+            
+            # remove the entity
+            x, y = self.state.positions[target_entity[POSITION_INDEX]]
+            self.state.map[y][x] = '-'
+            self.state.entities[action[2]][POSITION_INDEX] = -1
+            
+
+        elif action_type == ATTACK_ACTION:
+            pass
         else:
             raise TypeError(f'unhandled action type: {action[0]}')
 
