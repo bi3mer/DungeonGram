@@ -1,3 +1,6 @@
+from DungeonGram.config import IS_ACTIVE_INDEX
+
+
 class GameState:
     def __init__(self):
         self.entities = []
@@ -5,7 +8,7 @@ class GameState:
         self.tiles = [] 
         self.stats = []
         self.types = []
-        self.is_active = []
+        self.is_active = [True, False]
         self.systems = []
 
         self.map = None
@@ -56,13 +59,13 @@ class GameState:
         return self.__add_non_unique(self.positions, [x, y])
 
     def add_tile(self, tile):
-        return  self.__add_unique(self.tiles, tile)
+        return self.__add_unique(self.tiles, tile)
 
     def add_stats(self, health, damage):
-        return  self.__add_non_unique(self.stats, [health, damage])
+        return self.__add_non_unique(self.stats, [health, damage])
 
     def add_type(self, type):
-        return  self.__add_unique(self.types, type)
+        return self.__add_unique(self.types, type)
 
     def add_is_active(self, is_active):
         return self.__add_unique(self.is_active, is_active)
@@ -72,6 +75,12 @@ class GameState:
 
     def add_system(self, system_name):
         return self.__add_unique(self.systems, system_name)
+
+    def change_entity_is_active(self, entity_id, is_active):
+        if is_active:
+            self.entities[entity_id][IS_ACTIVE_INDEX] = 0
+        else:
+            self.entities[entity_id][IS_ACTIVE_INDEX] = 1
 
     def reset(self):
         self.positions.clear()

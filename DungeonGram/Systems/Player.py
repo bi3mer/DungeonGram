@@ -2,6 +2,11 @@ from os import stat
 from .System import System
 from ..config import *
 
+'''
+TODO
+- use some kind of inventory
+'''
+
 class Player(System):
     def __init__(self):
         super().__init__()
@@ -21,10 +26,6 @@ class Player(System):
     def get_player_actions(self, state, player_id):
         valid_actions = []
         x, y = state.positions[state.entities[player_id][POSITION_INDEX]]
-
-        # Once there is an inventory, the player should have the option 
-        # to use the items in their inventory. They should only be able to hold 
-        # onto one weapon and one pickaxe
 
         for entity_id, entity in enumerate(state.entities):
             if state.tiles[entity[TILE_INDEX]] == 'S':

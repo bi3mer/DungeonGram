@@ -9,7 +9,6 @@
     }, 
     "@": {
         "name": "Player",
-        "type": "being",
         "stats": {
             "health": 50,
             "damage": 1

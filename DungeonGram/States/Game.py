@@ -43,7 +43,11 @@ class Game(State):
                 entity_info = edb_entities[char]
                 pos_id = self.state.add_position(x, y)
                 tile_id = self.state.add_tile(char)
-                type_id = self.state.add_type(entity_info['type'])
+
+                if 'type' in entity_info:
+                    type_id = self.state.add_type(entity_info['type'])
+                else:
+                    type_id = -1
 
                 if 'is_active' in entity_info:
                     is_active_id = self.state.add_is_active(entity_info['is_active'])
